@@ -20,14 +20,6 @@ WORKDIR /var/www
 # - unzip           : Decompression tools
 # - git             : Version control
 # - curl            : Command-line tool for data transfer
-RUN apt-get update && apt-get install -y \
-    build-essential \           
-    locales \                   
-    zip \                       
-    vim \                       
-    unzip \                     
-    git \                      
-    curl                        
 
 # Install image optimization tools:
 # - libpng-dev    : PNG image processing
@@ -36,13 +28,6 @@ RUN apt-get update && apt-get install -y \
 # - optipng       : PNG optimization
 # - pngquant      : PNG quantization for optimization
 # - gifsicle      : GIF optimization
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    jpegoptim \
-    optipng \
-    pngquant \
-    gifsicle
 
 # Install library dependencies for PHP extensions:
 # - libfreetype6-dev : FreeType font rendering
@@ -50,12 +35,34 @@ RUN apt-get update && apt-get install -y \
 # - libpq-dev        : PostgreSQL support
 # - libonig-dev      : Oniguruma library for mbstring
 # - libicu-dev       : International Components for Unicode
+
+
+# Install all necessary system dependencies, image optimization tools,
+# and library dependencies for PHP extensions in one step.
 RUN apt-get update && apt-get install -y \
+    # System dependencies:
+    build-essential \            
+    locales \                   
+    zip \                       
+    vim \                       
+    unzip \                     
+    git \                      
+    curl \  
+    # Image optimization tools:
+    libpng-dev \
+    libjpeg-dev \
+    jpegoptim \
+    optipng \
+    pngquant \
+    gifsicle \
+    # Library dependencies for PHP extensions:
     libfreetype6-dev \
     libzip-dev \
     libpq-dev \
     libonig-dev \
-    libicu-dev
+    libicu-dev && \
+    # Clean up apt cache to reduce image size:
+    rm -rf /var/lib/apt/lists/*
 
 # Install and configure PHP extensions for graphics and image manipulation
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
@@ -81,9 +88,6 @@ RUN docker-php-ext-install \
     zip \
     exif \
     pcntl
-
-# Clear cache to reduce image size
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer (PHP package manager)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

@@ -1,10 +1,13 @@
 # Docker Compose file for development environment
 # Note: Added comments for new developers or people unfamiliar with Docker Compose.
+#
+# To use this file, run the following command:
+# docker compose -f docker-compose.dev.yml up -d (or --build if running for the first time)
 
 services:
   # 1. MAIN SERVICE APPLICATION (LARAVEL)
   # - Build: Specifies the context and Dockerfile for the app service.
-  # - Container Name: dev-app1, the container running the Laravel application.
+  # - Container Name: dev-app2, the container running the Laravel application.
   # - Restart Policy: Automatically restarts unless stopped manually.
   # - TTY: Keeps the container running interactively, useful for debugging.
   # - Environment: Defines environment variables for the service name and tags.
@@ -17,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: dev-app1
+    container_name: dev-app2
     restart: unless-stopped
     tty: true
     environment:
@@ -37,14 +40,14 @@ services:
 
   # 2. WEB SERVER SERVICE (NGINX)
   # - Image: Uses a lightweight Alpine-based NGINX image.
-  # - Container Name: dev-nginx1, the container running the NGINX web server.
+  # - Container Name: dev-nginx2, the container running the NGINX web server.
   # - Restart Policy: Automatically restarts unless stopped manually.
   # - Ports: Maps port 8080 on the host to port 80 in the container.
   # - Volumes: Maps project directories and custom NGINX configuration files.
   # - Networks: Connects to the shared application network.
   webserver:
     image: nginx:alpine
-    container_name: dev-nginx1
+    container_name: dev-nginx2
     restart: unless-stopped
     ports:
       - "8080:80"
@@ -56,13 +59,13 @@ services:
 
   # 3. DATABASE MANAGEMENT SERVICE (ADMINER)
   # - Image: Uses Adminer for lightweight web-based database management.
-  # - Container Name: dev-adminer1, the container running Adminer.
+  # - Container Name: dev-adminer2, the container running Adminer.
   # - Restart Policy: Automatically restarts unless stopped manually.
   # - Ports: Maps port 8081 on the host to port 8080 in the container.
   # - Networks: Connects to the shared application network.
   adminer:
     image: adminer
-    container_name: dev-adminer1
+    container_name: dev-adminer2
     restart: unless-stopped
     ports:
       - "8081:8080"
@@ -71,7 +74,7 @@ services:
 
   # 4. DATABASE SERVICE (POSTGRESQL)
   # - Image: Uses the official PostgreSQL image, version 15.
-  # - Container Name: dev-db1, the container running the database service.
+  # - Container Name: dev-db2, the container running the database service.
   # - Restart Policy: Automatically restarts unless stopped manually.
   # - Environment Variables: Sets up database username, password, and database name.
   # - Ports: Maps port 5433 on the host to port 5432 in the container.
@@ -79,14 +82,14 @@ services:
   # - Networks: Connects to the shared application network.
   db:
     image: postgres:15
-    container_name: dev-db1
+    container_name: dev-db2
     restart: unless-stopped
     environment:
       POSTGRES_USER: dev_user
       POSTGRES_PASSWORD: dev_password
       POSTGRES_DB: dev_db
     ports:
-      - "54323:5432"
+      - "5433:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
     networks:

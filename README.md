@@ -121,7 +121,7 @@ This starter kit is designed to provide a robust foundation for developing moder
     ```
 3. Migrate and seed the database.
     ```sh
-    docker exec -it dev-app1 bash
+    docker exec -it dev-app2 bash
     php artisan migrate:fresh --seed
     ```
 4. Access the site on `http://localhost:8088` (port configurable in the compose file).
