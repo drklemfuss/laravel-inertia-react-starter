@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+/** @typescript */
+class Task extends Model
+{
+    /** @use HasFactory<\Database\Factories\TaskFactory> */
+    use HasFactory;
+
+    protected $fillable = ['name', 'description', 'user_id', 'completed'];
+
+    /**
+     * Get the user that owns the task.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}

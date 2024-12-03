@@ -1,0 +1,107 @@
+# Docker Compose file for development environment
+# Note: Added comments for new developers or people unfamiliar with Docker Compose.
+
+services:
+  # 1. MAIN SERVICE APPLICATION (LARAVEL)
+  # - Build: Specifies the context and Dockerfile for the app service.
+  # - Container Name: dev-app1, the container running the Laravel application.
+  # - Restart Policy: Automatically restarts unless stopped manually.
+  # - TTY: Keeps the container running interactively, useful for debugging.
+  # - Environment: Defines environment variables for the service name and tags.
+  # - Working Directory: Sets /var/www as the container's working directory.
+  # - Environment File: Uses the .env file for Laravel configuration.
+  # - Volumes: Maps project directories to container paths for code sharing.
+  # - Networks: Connects to the shared application network.
+  # - Depends On: Ensures the database service starts before the application.
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: dev-app1
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www
+      - ./vendor:/var/www/vendor
+      - ./docker-compose/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # 2. WEB SERVER SERVICE (NGINX)
+  # - Image: Uses a lightweight Alpine-based NGINX image.
+  # - Container Name: dev-nginx1, the container running the NGINX web server.
+  # - Restart Policy: Automatically restarts unless stopped manually.
+  # - Ports: Maps port 8080 on the host to port 80 in the container.
+  # - Volumes: Maps project directories and custom NGINX configuration files.
+  # - Networks: Connects to the shared application network.
+  webserver:
+    image: nginx:alpine
+    container_name: dev-nginx1
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  # 3. DATABASE MANAGEMENT SERVICE (ADMINER)
+  # - Image: Uses Adminer for lightweight web-based database management.
+  # - Container Name: dev-adminer1, the container running Adminer.
+  # - Restart Policy: Automatically restarts unless stopped manually.
+  # - Ports: Maps port 8081 on the host to port 8080 in the container.
+  # - Networks: Connects to the shared application network.
+  adminer:
+    image: adminer
+    container_name: dev-adminer1
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - app-network
+
+  # 4. DATABASE SERVICE (POSTGRESQL)
+  # - Image: Uses the official PostgreSQL image, version 15.
+  # - Container Name: dev-db1, the container running the database service.
+  # - Restart Policy: Automatically restarts unless stopped manually.
+  # - Environment Variables: Sets up database username, password, and database name.
+  # - Ports: Maps port 5433 on the host to port 5432 in the container.
+  # - Volumes: Provides persistent storage for PostgreSQL data.
+  # - Networks: Connects to the shared application network.
+  db:
+    image: postgres:15
+    container_name: dev-db1
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: dev_db
+    ports:
+      - "54323:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+# 5. NETWORK: Define a custom network for communication between containers
+# - App Network: A bridge network that allows services to communicate securely.
+networks:
+  app-network:
+    driver: bridge
+
+# 6. STORAGE: Define volumes for persistent storage
+# - laravel-app-code: Placeholder for application code if needed in future configurations.
+# - dbdata: Stores PostgreSQL data persistently on the host system.
+volumes:
+  laravel-app-code:
+  dbdata:
+    driver: local

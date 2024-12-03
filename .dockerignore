@@ -1,0 +1,10 @@
+node_modules/
+*.log
+*.env
+.git
+.gitignore
+vendor/
+*.phpunit.result.cache
+*.vscode
+.env.local
+.env.*.local

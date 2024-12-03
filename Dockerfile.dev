@@ -1,0 +1,104 @@
+#################################################################################################################
+# Dev Dockerfile:
+#   - OPTIONAL: Development can be done locally without a dockerfile, if desired. This image contains dev tools 
+#     and dependencies for local development.
+#   - Exposes ports for local development (localhost:9000) and bind volumes for code changes. 
+#     (See docker-compose.dev.yml)
+#################################################################################################################
+
+# Use the official PHP image as a base image
+FROM php:8.3-fpm
+
+# Set working directory
+WORKDIR /var/www
+
+# Install system dependencies:
+# - build-essential : Tools for compiling software
+# - locales         : Manage system locales
+# - zip             : Compression tools
+# - vim             : Text editor
+# - unzip           : Decompression tools
+# - git             : Version control
+# - curl            : Command-line tool for data transfer
+RUN apt-get update && apt-get install -y \
+    build-essential \           
+    locales \                   
+    zip \                       
+    vim \                       
+    unzip \                     
+    git \                      
+    curl                        
+
+# Install image optimization tools:
+# - libpng-dev    : PNG image processing
+# - libjpeg-dev   : JPEG image processing
+# - jpegoptim     : JPEG optimization
+# - optipng       : PNG optimization
+# - pngquant      : PNG quantization for optimization
+# - gifsicle      : GIF optimization
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    jpegoptim \
+    optipng \
+    pngquant \
+    gifsicle
+
+# Install library dependencies for PHP extensions:
+# - libfreetype6-dev : FreeType font rendering
+# - libzip-dev       : ZIP handling
+# - libpq-dev        : PostgreSQL support
+# - libonig-dev      : Oniguruma library for mbstring
+# - libicu-dev       : International Components for Unicode
+RUN apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libzip-dev \
+    libpq-dev \
+    libonig-dev \
+    libicu-dev
+
+# Install and configure PHP extensions for graphics and image manipulation
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) gd
+
+# Install and configure PHP extensions for Internationalization (I18N)
+RUN docker-php-ext-configure intl && \
+    docker-php-ext-install intl
+
+# Install database drivers and core PHP extensions:
+# - pdo        : PDO core extension
+# - pdo_mysql  : PDO driver for MySQL
+# - pdo_pgsql  : PDO driver for PostgreSQL
+# - mbstring   : Multi-byte string handling
+# - zip        : ZIP file handling
+# - exif       : Metadata extraction from images
+# - pcntl      : Process control for signal handling
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    pdo_pgsql \
+    mbstring \
+    zip \
+    exif \
+    pcntl
+
+# Clear cache to reduce image size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Composer (PHP package manager)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy the existing application directory contents to the working directory
+COPY . /var/www
+
+# Ensure Laravel directories are writable
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache && \
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# Change current user to www-data
+USER www-data
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
+
