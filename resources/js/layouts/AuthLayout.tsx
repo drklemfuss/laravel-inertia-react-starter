@@ -2,7 +2,7 @@ import ApplicationLogo from "@/components/ui/application-logo";
 import { Link } from "@inertiajs/react";
 import { PropsWithChildren } from "react";
 import { Navbar } from "@/components/ui/navbar";
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ThemeProvider } from "@/components/mode-toggle/theme-provider";
 
 export default function AuthLayout({ children }: PropsWithChildren) {
     return (

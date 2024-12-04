@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { Navbar } from "@/components/ui/navbar";
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ThemeProvider } from "@/components/mode-toggle/theme-provider";
 
 export default function Guest({ children }: PropsWithChildren) {
     return (

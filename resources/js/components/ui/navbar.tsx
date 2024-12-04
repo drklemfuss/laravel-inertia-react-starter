@@ -20,7 +20,7 @@ import {
 } from "./navigation-menu";
 import { Button } from "./button";
 import { Link, usePage } from "@inertiajs/react";
-import { ModeToggle } from "./mode-toggle";
+import { ModeToggle } from "../mode-toggle/mode-toggle";
 
 interface RouteProps {
     href: string;

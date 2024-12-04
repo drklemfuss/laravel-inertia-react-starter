@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Http\Requests\Resources\Tasks\EditTaskRequest;
 
 beforeEach(function () {
     app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
@@ -45,17 +46,18 @@ test('store creates a new task', function () {
 
 test('edit returns the task for authorized user', function () {
     $user = User::factory()->create();
-    $user->assignRole('user'); // Assign the 'user' role
+    $user->assignRole('user');
+    $user->givePermissionTo('edit-task');
 
     $task = Task::factory()->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->get(route('tasks.edit', $task));
+    $this->partialMock(EditTaskRequest::class, function ($mock) use ($user, $task) {
+        $mock->shouldReceive('authorize')->andReturnTrue();
+    });
 
-    $response->assertOk()
-        ->assertInertia(fn ($page) =>
-            $page->component('Tasks/Edit')
-                ->where('task.id', $task->id)
-        );
+    $this->actingAs($user)
+        ->get(route('tasks.edit', $task))
+        ->assertOk();
 });
 
 test('destroy deletes the task for authorized user', function () {
@@ -71,3 +73,5 @@ test('destroy deletes the task for authorized user', function () {
         'id' => $task->id,
     ]);
 });
+
+

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Resources;
 
 use App\Models\Country;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Policies\CountryPolicy;
@@ -21,7 +22,7 @@ class CountryController extends Controller
     // Display a list of countries
     public function index()
     {
-        $countries = Country::all(); // Or use pagination if needed
+        $countries = Country::all(); 
         return Inertia::render('Countries/Index', [
             'countries' => $countries,
         ]);

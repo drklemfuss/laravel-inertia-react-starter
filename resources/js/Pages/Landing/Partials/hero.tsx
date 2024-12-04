@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { useTheme } from "@/components/ui/theme-provider";
+import { useTheme } from "@/components/mode-toggle/theme-provider";
 import { Link } from "@inertiajs/react";
 
 export const HeroSection = () => {

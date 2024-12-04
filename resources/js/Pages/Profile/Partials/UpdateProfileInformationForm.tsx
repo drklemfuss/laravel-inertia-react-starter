@@ -32,19 +32,19 @@ export default function UpdateProfileInformation({
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                <h2 className="text-lg font-medium text-accent-foreground">
                     Profile Information
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-1 text-sm text-muted-foreground">
                     Update your account's profile information and email address.
                 </p>
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div>
-                    <Label htmlFor="name" className="sr-only">
-                        Name
+                    <Label htmlFor="name" className="text-muted-foreground">
+                        User Name
                     </Label>
 
                     <Input
@@ -64,7 +64,7 @@ export default function UpdateProfileInformation({
                 </div>
 
                 <div>
-                    <Label htmlFor="email" className="sr-only">
+                    <Label htmlFor="email" className="text-muted-foreground">
                         Email
                     </Label>
 

@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\CountryController;
+use App\Http\Controllers\UserManagement\ProfileController;
+use App\Http\Controllers\Resources\TaskController;
+use App\Http\Controllers\Resources\CountryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;

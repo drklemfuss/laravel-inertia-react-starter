@@ -12,10 +12,10 @@ class TaskPolicy
 
     /**
      * Determine if the user can view any task.
+     * Admins can view all tasks, regular users can only view their own tasks.
      */
     public function viewAny(User $user)
     {
-        // Admins can view all tasks, regular users can only view their own tasks
         return $user->hasRole('admin') || $user->hasPermissionTo('view-any-task');
     }
 
@@ -24,13 +24,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task)
     {
-        // Admins can update any task
-        if ($user->hasRole('admin')) {
-            return true;
-        }
-
-        // Regular users can only view their own tasks
-        return $user->hasPermissionTo('view-task') && $user->id === $task->user_id;
+        return $user->hasRole('admin') || ($user->hasPermissionTo('view-task') && $user->id === $task->user_id);
     }
 
     /**
@@ -38,13 +32,14 @@ class TaskPolicy
      */
     public function update(User $user, Task $task)
     {
-        // Admins can update any task
-        if ($user->hasRole('admin')) {
-            return true;
-        }
+        \Log::info('Policy Update Check', [
+            'user_id' => $user->id,
+            'task_owner_id' => $task->user_id,
+            'has_edit_permission' => $user->hasPermissionTo('edit-task'),
+            'is_admin' => $user->hasRole('admin'),
+        ]);
 
-        // Regular users can only update their own tasks if they have the "edit-task" permission
-        return $user->hasPermissionTo('edit-task') && $task->user_id === $user->id;
+        return $user->hasRole('admin') || ($user->hasPermissionTo('edit-task') && $user->id === $task->user_id);
     }
 
     /**
@@ -52,14 +47,18 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task)
     {
-        // Admins can delete any task
-        if ($user->hasRole('admin')) {
-            return true;
-        }
+        return $user->hasRole('admin') || ($user->hasPermissionTo('delete-task') && $user->id === $task->user_id);
+    }
 
-        // Regular users can only delete their own tasks
-        return $user->hasPermissionTo('delete-task') &&  $user->id === $task->user_id;
+    /**
+     * Determine if the user can create a task.
+     * Any authenticated user can create a task.
+     */
+    public function create(User $user)
+    {
+        return $user->hasRole('admin') || $user->hasPermissionTo('create-task');
     }
 }
+
 
 
